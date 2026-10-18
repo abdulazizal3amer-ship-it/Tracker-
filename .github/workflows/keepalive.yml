@@ -1,0 +1,21 @@
+# مشروع Supabase المجاني يتوقف بعد أسبوع بلا نشاط (مثل الإجازات).
+# هذا التشغيل يرسل طلباً خفيفاً كل 3 أيام ليبقى المشروع نشطاً.
+name: Keep Supabase active
+
+on:
+  schedule:
+    - cron: '0 6 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -fsS "$URL/rest/v1/projects?select=id&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -o /dev/null
+          echo "Supabase is awake"
